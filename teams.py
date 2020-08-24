@@ -48,7 +48,7 @@ def join():
   end = os.popen('date').read().strip('\n')
   end_check = time.clock_gettime(0)
   lasted_for = end_check - start_check
-  if lasted_for > 1:
+  if lasted_for > 120:
     lasted_for = calc_time_elapsed(lasted_for)
     s = f'{start},{end},{meeting_name},{lasted_for}\n'
     with open(f'{username}.log','a') as f:
