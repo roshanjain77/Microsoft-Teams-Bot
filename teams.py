@@ -27,9 +27,11 @@ def calc_time_elapsed(sec):
 def join():
   WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="roster-button"]'))).click()
   mx = 0
-  start = os.popen('date').read()
+  start = os.popen('date').read().strip('\n')
   start_check = time.clock_gettime(0)
-  meeting_name = driver.title.strip('Microsoft Teams')
+  meeting_name = driver.title[:-28]
+  if not meeting_name:
+      meeting_name = '(no title)'
   while True:
     time.sleep(10)
     print('Watching Participants')
@@ -43,12 +45,12 @@ def join():
     except:
       break
     time.sleep(50)
-  end = os.popen('date').read()
+  end = os.popen('date').read().strip('\n')
   end_check = time.clock_gettime(0)
   lasted_for = end_check - start_check
   if lasted_for > 1:
     lasted_for = calc_time_elapsed(lasted_for)
-    s = f'{start} -> {end} {meeting_name} {lasted_for}\n'
+    s = f'{start},{end},{meeting_name},{lasted_for}\n'
     with open(f'{username}.log','a') as f:
       f.write(s)
   driver.refresh()
