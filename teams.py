@@ -6,27 +6,51 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-import time
+import time,os
 
+def calc_time_elapsed(sec):
+  sec = int(sec)
+  h,m,s = 0,0,0
+  ret = ''
+  s = sec % 60
+  m = sec // 60
+  m = m % 60
+  h = m // 60
+  if h:
+    ret += f'{h}h '
+  if m:
+    ret += f'{m}m '
+  if s:
+    ret += f'{s}s'
+  return ret
 
 def join():
-  WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="roster-button"]'))).click()
+  WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="roster-button"]'))).click()
+  mx = 0
+  start = os.popen('date').read()
+  start_check = time.clock_gettime(0)
+  meeting_name = driver.title.strip('Microsoft Teams')
   while True:
     time.sleep(10)
     print('Watching Participants')
     try:
-      try:
-        others = int(WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="page-content-wrapper"]/div[1]/div/calling-screen/div/div[2]/meeting-panel-components/calling-roster/div/div[2]/div/div[1]/accordion/div/accordion-section[4]/div/calling-roster-section/div/div[1]/button/span[3]'))).text[1:-1])
-      except:
-        others = 0
-      current = int(WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="page-content-wrapper"]/div[1]/div/calling-screen/div/div[2]/meeting-panel-components/calling-roster/div/div[2]/div/div[1]/accordion/div/accordion-section[2]/div/calling-roster-section/div/div[1]/button/span[3]'))).text[1:-1])
-      percent = (current/(others + current))*100
-      print(percent)
-      if(percent < 20 or current < 10):
+      current = int(WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="page-content-wrapper"]/div[1]/div/calling-screen/div/div[2]/meeting-panel-components/calling-roster/div/div[2]/div/div[1]/accordion/div/accordion-section[2]/div/calling-roster-section/div/div[1]/button/span[3]'))).text[1:-1])
+      mx = max(mx, current)
+      percent = (current/mx)*100
+      print(f'{percent}%, {current}')
+      if(percent < 15 or current < 10):
         break
     except:
       break
-    time.sleep(110)
+    time.sleep(50)
+  end = os.popen('date').read()
+  end_check = time.clock_gettime(0)
+  lasted_for = end_check - start_check
+  if lasted_for > 1:
+    lasted_for = calc_time_elapsed(lasted_for)
+    s = f'{start} -> {end} {meeting_name} {lasted_for}\n'
+    with open(f'{username}.log','a') as f:
+      f.write(s)
   driver.refresh()
   time.sleep(15)
   driver.refresh()
@@ -74,8 +98,8 @@ while True:
     print('found a event to join')
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//button[@aria-label="Join meeting"]'))).click()
     print('joining')
-    #WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH,'//button[@ng-click="getUserMedia.passWithoutMedia()"]'))).click()
-    #driver.find_element_by_xpath('//span[text()="Audio off"]').click()
+    # WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH,'//button[@ng-click="getUserMedia.passWithoutMedia()"]'))).click()
+    # driver.find_element_by_xpath('//span[text()="Audio off"]').click()
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//button[text()="Join now"]'))).click()
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="hangup-button"]')))
     print('joined meeting')
@@ -84,4 +108,4 @@ while True:
     print("Entering 60")
     time.sleep(60)
     print("Exiting 60")
-  
+    
