@@ -12,9 +12,9 @@ def calc_time_elapsed(sec):
   h,m,s = 0,0,0
   ret = ''
   s = sec % 60
-  m = sec // 60
-  m = m % 60
-  h = m // 60
+  mn = sec // 60
+  m = mn % 60
+  h = mn // 60
   if h:
     ret += f'{h}h '
   if m:
@@ -26,7 +26,7 @@ def calc_time_elapsed(sec):
 def join():
   WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="roster-button"]'))).click()
   mx = 0
-  start = os.popen('TZ="IST" date').read().strip('\n')
+  start = os.popen('date --date="+5 hour 30 minutes" +"%a %d %b %Y %I:%M %p"').read().strip('\n')
   start_check = time.clock_gettime(0)
   meeting_name = driver.title[:-28]
   if not meeting_name:
@@ -40,13 +40,13 @@ def join():
     except:
       break
     time.sleep(50)
-  end = os.popen('TZ="IST" date').read().strip('\n')
+  end = os.popen('date --date="+5 hour 30 minutes" +"%a %d %b %Y %I:%M %p"').read().strip('\n')
   end_check = time.clock_gettime(0)
   lasted_for = end_check - start_check
   if lasted_for > 120:
     lasted_for = calc_time_elapsed(lasted_for)
     s = f'{start},{end},{meeting_name},{lasted_for}\n'
-    with open(f'{username}.log','a') as f:
+    with open(f'/home/ubuntu/Microsoft-Teams-Bot/{username}.log','a') as f:
       f.write(s)
   driver.refresh()
   time.sleep(15)
