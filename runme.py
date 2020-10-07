@@ -4,8 +4,8 @@ import time
 os.system('sudo killall chrome')
 os.system('sudo killall chromedriver')
 os.system('sudo rm -fr /tmp/.com*')
-with open('/home/ubuntu/Microsoft-Teams-Bot/cnt.log','a') as f:
-    f.write('.')
+with open('/home/ubuntu/Microsoft-Teams-Bot/cnt.log','w') as f:
+    f.write(os.popen('date').read())
 with open('/home/ubuntu/Microsoft-Teams-Bot/list','r') as f:
     profiles = f.readlines()
     for profile in profiles:

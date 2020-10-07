@@ -39,11 +39,11 @@ def join():
         break
     except:
       break
-    time.sleep(50)
+    time.sleep(10)
   end = os.popen('date --date="+5 hour 30 minutes" +"%a %d %b %Y %I:%M %p"').read().strip('\n')
   end_check = time.clock_gettime(0)
   lasted_for = end_check - start_check
-  if lasted_for > 120:
+  if lasted_for > 60:
     lasted_for = calc_time_elapsed(lasted_for)
     s = f'{start},{end},{meeting_name},{lasted_for}\n'
     with open(f'/home/ubuntu/Microsoft-Teams-Bot/{username}.log','a') as f:
@@ -98,7 +98,7 @@ while True:
   except:
     if cal:
       driver.get('https://login.microsoftonline.com/common/oauth2/authorize?response_type=id_token&client_id=5e3ce6c0-2b1f-4285-8d4b-75ee78787346')
-      time.sleep(120)
+      time.sleep(90)
     else:
-        time.sleep(60)
+        time.sleep(15)
     
